@@ -2,16 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/constants/app_colors.dart';
+import '../../models/doctor.dart';
+import '../../providers/data_providers.dart';
 
-class MyDoctorsScreen extends StatefulWidget {
+class MyDoctorsScreen extends ConsumerStatefulWidget {
   const MyDoctorsScreen({super.key});
 
   @override
-  State<MyDoctorsScreen> createState() => _MyDoctorsScreenState();
+  ConsumerState<MyDoctorsScreen> createState() => _MyDoctorsScreenState();
 }
 
-class _MyDoctorsScreenState extends State<MyDoctorsScreen> {
+class _MyDoctorsScreenState extends ConsumerState<MyDoctorsScreen> {
   final List<String> _specializations = const [
     'All Specializations',
     'Physiotherapy',
@@ -149,13 +152,7 @@ class _MyDoctorsScreenState extends State<MyDoctorsScreen> {
   }
 
   Widget _buildDoctorsList() {
-    // Dummy data matching screenshot
-    final doctors = [
-      {'name': 'Dr. Pritam Kayal', 'spec': 'Physiotherapy', 'prefix': '2k25', 'desc': '23'},
-      {'name': 'Dr sumit', 'spec': 'mbbs', 'prefix': 'icon'},
-      {'name': 'Dr Debasish Baidya', 'spec': 'MBBS', 'prefix': 'icon'},
-      {'name': 'Dr raj dutta', 'spec': 'mbbs', 'prefix': 'icon'},
-    ];
+    final doctors = ref.watch(doctorsProvider);
 
     return ListView.separated(
       padding: const EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 100),
@@ -163,7 +160,7 @@ class _MyDoctorsScreenState extends State<MyDoctorsScreen> {
       separatorBuilder: (context, index) => const SizedBox(height: 12),
       itemBuilder: (context, index) {
         final doc = doctors[index];
-        return _buildDoctorCard(doc['name']!, doc['spec']!, doc['prefix']!, doc['desc']);
+        return _buildDoctorCard(doc.name, doc.specialization, doc.prefixType, doc.description);
       },
     );
   }

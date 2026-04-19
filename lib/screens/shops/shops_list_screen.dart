@@ -2,16 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/constants/app_colors.dart';
+import '../../models/shop.dart';
+import '../../providers/data_providers.dart';
 
-class ShopsListScreen extends StatefulWidget {
+class ShopsListScreen extends ConsumerStatefulWidget {
   const ShopsListScreen({super.key});
 
   @override
-  State<ShopsListScreen> createState() => _ShopsListScreenState();
+  ConsumerState<ShopsListScreen> createState() => _ShopsListScreenState();
 }
 
-class _ShopsListScreenState extends State<ShopsListScreen> {
+class _ShopsListScreenState extends ConsumerState<ShopsListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -110,10 +113,7 @@ class _ShopsListScreenState extends State<ShopsListScreen> {
   }
 
   Widget _buildShopsList() {
-    final shops = [
-      {'name': 'Naiyo24 Med Pharma', 'address': 'Baghajatin', 'phone': '8910941891', 'image': 'https://images.unsplash.com/photo-1576602976047-174e57a47881?auto=format&fit=crop&w=600&q=80'},
-      {'name': 'Apollo Pharmacy', 'address': 'Salt Lake, Sec V', 'phone': '8001234567', 'image': 'https://images.unsplash.com/photo-1563213126-a4273aed2016?auto=format&fit=crop&w=600&q=80'},
-    ];
+    final shops = ref.watch(shopsProvider);
 
     return ListView.separated(
       padding: const EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 100),
@@ -125,7 +125,7 @@ class _ShopsListScreenState extends State<ShopsListScreen> {
     );
   }
 
-  Widget _buildShopCard(Map<String, String> data) {
+  Widget _buildShopCard(Shop data) {
     return Container(
       decoration: BoxDecoration(
         color: AppColors.white,
@@ -142,7 +142,7 @@ class _ShopsListScreenState extends State<ShopsListScreen> {
           ClipRRect(
             borderRadius: const BorderRadius.only(topLeft: Radius.circular(16), topRight: Radius.circular(16)),
             child: Image.network(
-              data['image']!,
+              data.image,
               height: 160,
               width: double.infinity,
               fit: BoxFit.cover,
@@ -154,7 +154,7 @@ class _ShopsListScreenState extends State<ShopsListScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  data['name']!,
+                  data.name,
                   style: GoogleFonts.inter(
                     fontWeight: FontWeight.w800,
                     fontSize: 22,
@@ -167,7 +167,7 @@ class _ShopsListScreenState extends State<ShopsListScreen> {
                     const Icon(LucideIcons.mapPin, size: 16, color: AppColors.textSecondary),
                     const SizedBox(width: 8),
                     Text(
-                      data['address']!,
+                      data.address,
                       style: GoogleFonts.inter(fontSize: 14, color: AppColors.textSecondary),
                     ),
                   ],
@@ -178,7 +178,7 @@ class _ShopsListScreenState extends State<ShopsListScreen> {
                     const Icon(LucideIcons.phone, size: 16, color: AppColors.textSecondary),
                     const SizedBox(width: 8),
                     Text(
-                      data['phone']!,
+                      data.phone,
                       style: GoogleFonts.inter(fontSize: 14, color: AppColors.textSecondary),
                     ),
                   ],

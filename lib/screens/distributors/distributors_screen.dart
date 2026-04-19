@@ -2,13 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/constants/app_colors.dart';
+import '../../models/distributor.dart';
+import '../../providers/data_providers.dart';
 
-class DistributorsScreen extends StatelessWidget {
+class DistributorsScreen extends ConsumerWidget {
   const DistributorsScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -45,7 +48,7 @@ class DistributorsScreen extends StatelessWidget {
             _buildSearchBar(),
             const SizedBox(height: 12),
             Expanded(
-              child: _buildDistributorsList(),
+              child: _buildDistributorsList(ref),
             ),
           ],
         ),
@@ -81,16 +84,8 @@ class DistributorsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildDistributorsList() {
-    final distributors = [
-      {
-        'id': 'DIST6283938298',
-        'name': 'Naiyo24 Dev Distributors',
-        'location': 'Kolkata',
-        'phone': '6289398298',
-        'image': 'https://picsum.photos/400/200', // Random photo URL
-      },
-    ];
+  Widget _buildDistributorsList(WidgetRef ref) {
+    final distributors = ref.watch(distributorsProvider);
 
     return distributors.isEmpty
         ? Center(
@@ -125,7 +120,7 @@ class DistributorsScreen extends StatelessWidget {
           );
   }
 
-  Widget _buildDistributorCard(Map<String, String> distributor) {
+  Widget _buildDistributorCard(Distributor distributor) {
     return Container(
       decoration: BoxDecoration(
         color: AppColors.white,
@@ -144,7 +139,7 @@ class DistributorsScreen extends StatelessWidget {
               topRight: Radius.circular(16),
             ),
             child: Image.network(
-              distributor['image']!,
+              distributor.image,
               height: 160,
               width: double.infinity,
               fit: BoxFit.cover,
@@ -156,7 +151,7 @@ class DistributorsScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  distributor['id']!,
+                  distributor.id,
                   style: GoogleFonts.inter(
                     fontSize: 12,
                     fontWeight: FontWeight.w500,
@@ -165,7 +160,7 @@ class DistributorsScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  distributor['name']!,
+                  distributor.name,
                   style: GoogleFonts.inter(
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
@@ -178,7 +173,7 @@ class DistributorsScreen extends StatelessWidget {
                     const Icon(LucideIcons.mapPin, size: 16, color: AppColors.textSecondary),
                     const SizedBox(width: 8),
                     Text(
-                      distributor['location']!,
+                      distributor.location,
                       style: GoogleFonts.inter(
                         fontSize: 14,
                         color: AppColors.textSecondary,
@@ -192,7 +187,7 @@ class DistributorsScreen extends StatelessWidget {
                     const Icon(LucideIcons.phone, size: 16, color: AppColors.textSecondary),
                     const SizedBox(width: 8),
                     Text(
-                      distributor['phone']!,
+                      distributor.phone,
                       style: GoogleFonts.inter(
                         fontSize: 14,
                         color: AppColors.textSecondary,

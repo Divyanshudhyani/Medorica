@@ -2,16 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/constants/app_colors.dart';
+import '../../models/dcr.dart';
+import '../../providers/data_providers.dart';
 
-class DcrListScreen extends StatefulWidget {
+class DcrListScreen extends ConsumerStatefulWidget {
   const DcrListScreen({super.key});
 
   @override
-  State<DcrListScreen> createState() => _DcrListScreenState();
+  ConsumerState<DcrListScreen> createState() => _DcrListScreenState();
 }
 
-class _DcrListScreenState extends State<DcrListScreen> {
+class _DcrListScreenState extends ConsumerState<DcrListScreen> {
   DateTime? _selectedDate;
   String _selectedStatus = 'All';
 
@@ -176,11 +179,7 @@ class _DcrListScreenState extends State<DcrListScreen> {
   }
 
   Widget _buildAppointmentsList() {
-    final appointments = [
-      {'name': 'Dr Debasish Baidya', 'spec': 'MBBS', 'date': 'Apr 30, 2026', 'time': '6:30 PM', 'place': 'Baghajatin, Kolkata', 'status': 'Completed'},
-      {'name': 'Dr sumit', 'spec': 'mbbs', 'date': 'Mar 28, 2026', 'time': '3:00 PM', 'place': 'kolkata', 'status': 'Completed'},
-      {'name': 'Dr. Pritam Kayal', 'spec': 'Physiotherapy', 'date': 'Mar 19, 2026', 'time': '5:30 PM', 'place': 'Baghajatin', 'status': 'Completed'},
-    ];
+    final appointments = ref.watch(dcrProvider);
 
     return ListView.separated(
       padding: const EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 100),
@@ -193,7 +192,7 @@ class _DcrListScreenState extends State<DcrListScreen> {
     );
   }
 
-  Widget _buildAppointmentCard(Map<String, String> data) {
+  Widget _buildAppointmentCard(Dcr data) {
     return Container(
       decoration: BoxDecoration(
         color: AppColors.white,
@@ -217,7 +216,7 @@ class _DcrListScreenState extends State<DcrListScreen> {
                     shape: BoxShape.circle,
                   ),
                   alignment: Alignment.center,
-                  child: data['name'] == 'Dr. Pritam Kayal'
+                  child: data.doctorName == 'Dr. Pritam Kayal'
                       ? Text('2k25', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 10))
                       : const Icon(LucideIcons.user, color: AppColors.textSecondary, size: 24),
                 ),
@@ -227,12 +226,12 @@ class _DcrListScreenState extends State<DcrListScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        data['name']!,
+                        data.doctorName,
                         style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 16, color: AppColors.textPrimary),
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        data['spec']!,
+                        data.specialization,
                         style: GoogleFonts.inter(fontSize: 12, color: AppColors.textSecondary),
                       ),
                     ],
@@ -245,7 +244,7 @@ class _DcrListScreenState extends State<DcrListScreen> {
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Text(
-                    data['status']!,
+                    data.status,
                     style: GoogleFonts.inter(color: Colors.green[700], fontWeight: FontWeight.w600, fontSize: 11),
                   ),
                 ),
@@ -264,7 +263,7 @@ class _DcrListScreenState extends State<DcrListScreen> {
                         children: [
                           const Icon(LucideIcons.calendar, size: 16, color: AppColors.textSecondary),
                           const SizedBox(width: 8),
-                          Text(data['date']!, style: GoogleFonts.inter(fontSize: 13, color: AppColors.textPrimary, fontWeight: FontWeight.w500)),
+                          Text(data.date, style: GoogleFonts.inter(fontSize: 13, color: AppColors.textPrimary, fontWeight: FontWeight.w500)),
                         ],
                       ),
                     ),
@@ -273,7 +272,7 @@ class _DcrListScreenState extends State<DcrListScreen> {
                         children: [
                           const Icon(LucideIcons.clock, size: 16, color: AppColors.textSecondary),
                           const SizedBox(width: 8),
-                          Text(data['time']!, style: GoogleFonts.inter(fontSize: 13, color: AppColors.textPrimary, fontWeight: FontWeight.w500)),
+                          Text(data.time, style: GoogleFonts.inter(fontSize: 13, color: AppColors.textPrimary, fontWeight: FontWeight.w500)),
                         ],
                       ),
                     ),
@@ -284,7 +283,7 @@ class _DcrListScreenState extends State<DcrListScreen> {
                   children: [
                     const Icon(LucideIcons.messageSquare, size: 16, color: AppColors.textSecondary),
                     const SizedBox(width: 8),
-                    Text(data['place']!, style: GoogleFonts.inter(fontSize: 13, color: AppColors.textSecondary)),
+                    Text(data.place, style: GoogleFonts.inter(fontSize: 13, color: AppColors.textSecondary)),
                   ],
                 )
               ],

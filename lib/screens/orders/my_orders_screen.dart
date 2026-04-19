@@ -2,16 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/constants/app_colors.dart';
+import '../../models/order.dart';
+import '../../providers/data_providers.dart';
 
-class MyOrdersScreen extends StatefulWidget {
+class MyOrdersScreen extends ConsumerStatefulWidget {
   const MyOrdersScreen({super.key});
 
   @override
-  State<MyOrdersScreen> createState() => _MyOrdersScreenState();
+  ConsumerState<MyOrdersScreen> createState() => _MyOrdersScreenState();
 }
 
-class _MyOrdersScreenState extends State<MyOrdersScreen> {
+class _MyOrdersScreenState extends ConsumerState<MyOrdersScreen> {
   String _selectedStatus = 'All Orders';
 
   @override
@@ -120,15 +123,11 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
   }
 
   Widget _buildOrdersList() {
-    final allOrders = [
-      {'id': 'MR6289398298-ORD-20260319082511-B12FFD', 'status': 'APPROVED', 'shop': '-', 'dist': '-'},
-      {'id': 'MR6289398298-ORD-20260319115834-99C8AB', 'status': 'PENDING', 'shop': '-', 'dist': '-'},
-      {'id': 'MR6289398298-ORD-20260327092001-F1A395', 'status': 'PENDING', 'shop': '-', 'dist': '-'},
-    ];
+    final allOrders = ref.watch(ordersProvider);
 
     final orders = _selectedStatus == 'All Orders'
         ? allOrders
-        : allOrders.where((o) => o['status']?.toUpperCase() == _selectedStatus.toUpperCase()).toList();
+        : allOrders.where((o) => o.status.toUpperCase() == _selectedStatus.toUpperCase()).toList();
 
     return ListView.separated(
       padding: const EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 100),
@@ -141,8 +140,8 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
     );
   }
 
-  Widget _buildOrderCard(Map<String, String> data) {
-    final isApproved = data['status'] == 'APPROVED';
+  Widget _buildOrderCard(Order data) {
+    final isApproved = data.status == 'APPROVED';
 
     return Container(
       decoration: BoxDecoration(
@@ -172,7 +171,7 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        data['id']!,
+                        data.id,
                         style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 13, color: AppColors.textPrimary),
                       ),
                     ],
@@ -185,7 +184,7 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
-                    data['status']!,
+                    data.status,
                     style: GoogleFonts.inter(color: isApproved ? Colors.white : AppColors.textPrimary, fontWeight: FontWeight.w700, fontSize: 10),
                   ),
                 ),
@@ -203,7 +202,7 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
                 children: [
                   const Icon(LucideIcons.store, size: 18, color: AppColors.textSecondary),
                   const SizedBox(width: 12),
-                  Text('Shop: ${data['shop']}', style: GoogleFonts.inter(fontSize: 13, color: AppColors.textPrimary, fontWeight: FontWeight.w600)),
+                  Text('Shop: ${data.shop}', style: GoogleFonts.inter(fontSize: 13, color: AppColors.textPrimary, fontWeight: FontWeight.w600)),
                 ],
               ),
             ),
@@ -219,7 +218,7 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
                 children: [
                   const Icon(LucideIcons.truck, size: 18, color: AppColors.textSecondary),
                   const SizedBox(width: 12),
-                  Text('Distributor: ${data['dist']}', style: GoogleFonts.inter(fontSize: 13, color: AppColors.textPrimary, fontWeight: FontWeight.w600)),
+                  Text('Distributor: ${data.dist}', style: GoogleFonts.inter(fontSize: 13, color: AppColors.textPrimary, fontWeight: FontWeight.w600)),
                 ],
               ),
             ),
